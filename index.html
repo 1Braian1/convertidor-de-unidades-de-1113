@@ -1,0 +1,675 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Conversor Universal</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Mono:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0a0a0f;
+    --surface: #12121a;
+    --card: #1a1a26;
+    --border: #2a2a3d;
+    --accent-temp: #ff6b35;
+    --accent-area: #00d4aa;
+    --accent-length: #a78bfa;
+    --accent-speed: #fbbf24;
+    --text: #f0eff8;
+    --muted: #6b6b8a;
+    --glow-temp: rgba(255,107,53,0.15);
+    --glow-area: rgba(0,212,170,0.15);
+    --glow-length: rgba(167,139,250,0.15);
+    --glow-speed: rgba(251,191,36,0.15);
+  }
+
+  * { margin:0; padding:0; box-sizing:border-box; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'DM Mono', monospace;
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image:
+      linear-gradient(rgba(255,255,255,0.02) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(255,255,255,0.02) 1px, transparent 1px);
+    background-size: 40px 40px;
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  .wrapper {
+    position: relative;
+    z-index: 1;
+    max-width: 960px;
+    margin: 0 auto;
+    padding: 48px 24px 80px;
+  }
+
+  header {
+    text-align: center;
+    margin-bottom: 56px;
+    animation: fadeDown 0.7s ease both;
+  }
+
+  header .eyebrow {
+    font-size: 11px;
+    letter-spacing: 0.35em;
+    color: var(--muted);
+    text-transform: uppercase;
+    margin-bottom: 12px;
+  }
+
+  header h1 {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: clamp(56px, 10vw, 96px);
+    letter-spacing: 0.05em;
+    line-height: 0.9;
+    background: linear-gradient(135deg, #ff6b35 0%, #a78bfa 40%, #00d4aa 80%, #fbbf24 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  header p {
+    margin-top: 16px;
+    font-size: 13px;
+    color: var(--muted);
+    letter-spacing: 0.05em;
+  }
+
+  .tabs {
+    display: flex;
+    gap: 4px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 6px;
+    margin-bottom: 32px;
+    animation: fadeUp 0.6s 0.2s ease both;
+  }
+
+  .tab-btn {
+    flex: 1;
+    background: none;
+    border: none;
+    color: var(--muted);
+    font-family: 'DM Mono', monospace;
+    font-size: 12px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    padding: 10px 8px;
+    border-radius: 10px;
+    cursor: pointer;
+    transition: all 0.25s;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 5px;
+  }
+
+  .tab-btn .tab-icon { font-size: 20px; }
+  .tab-btn:hover { color: var(--text); background: var(--card); }
+
+  .tab-btn.active[data-tab="temp"]   { color: var(--accent-temp);   background: var(--glow-temp);   box-shadow: inset 0 0 0 1px var(--accent-temp); }
+  .tab-btn.active[data-tab="area"]   { color: var(--accent-area);   background: var(--glow-area);   box-shadow: inset 0 0 0 1px var(--accent-area); }
+  .tab-btn.active[data-tab="length"] { color: var(--accent-length); background: var(--glow-length); box-shadow: inset 0 0 0 1px var(--accent-length); }
+  .tab-btn.active[data-tab="speed"]  { color: var(--accent-speed);  background: var(--glow-speed);  box-shadow: inset 0 0 0 1px var(--accent-speed); }
+
+  .panel { display: none; animation: fadeUp 0.4s ease both; }
+  .panel.active { display: block; }
+
+  .conv-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    padding: 32px;
+    margin-bottom: 20px;
+  }
+
+  .conv-card h2 {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 28px;
+    letter-spacing: 0.06em;
+    margin-bottom: 6px;
+  }
+
+  .conv-card .subtitle {
+    font-size: 11px;
+    color: var(--muted);
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    margin-bottom: 28px;
+  }
+
+  #temp   .conv-card h2 { color: var(--accent-temp); }
+  #area   .conv-card h2 { color: var(--accent-area); }
+  #length .conv-card h2 { color: var(--accent-length); }
+  #speed  .conv-card h2 { color: var(--accent-speed); }
+
+  .conv-row {
+    display: grid;
+    grid-template-columns: 1fr auto 1fr;
+    align-items: end;
+    gap: 16px;
+    margin-bottom: 24px;
+  }
+
+  .field-group { display: flex; flex-direction: column; gap: 8px; }
+
+  .field-group label {
+    font-size: 10px;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--muted);
+  }
+
+  .field-group select,
+  .field-group input {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    color: var(--text);
+    font-family: 'DM Mono', monospace;
+    font-size: 14px;
+    padding: 12px 14px;
+    width: 100%;
+    outline: none;
+    transition: border-color 0.2s, box-shadow 0.2s;
+    -webkit-appearance: none;
+  }
+
+  .field-group input { font-size: 22px; font-weight: 500; }
+
+  #temp   .field-group input:focus, #temp   .field-group select:focus { border-color: var(--accent-temp);   box-shadow: 0 0 0 3px var(--glow-temp); }
+  #area   .field-group input:focus, #area   .field-group select:focus { border-color: var(--accent-area);   box-shadow: 0 0 0 3px var(--glow-area); }
+  #length .field-group input:focus, #length .field-group select:focus { border-color: var(--accent-length); box-shadow: 0 0 0 3px var(--glow-length); }
+  #speed  .field-group input:focus, #speed  .field-group select:focus { border-color: var(--accent-speed);  box-shadow: 0 0 0 3px var(--glow-speed); }
+
+  .swap-btn {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 50%;
+    width: 44px;
+    height: 44px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    font-size: 18px;
+    color: var(--muted);
+    transition: all 0.25s;
+    flex-shrink: 0;
+    margin-bottom: 2px;
+  }
+
+  .swap-btn:hover { color: var(--text); border-color: var(--text); transform: rotate(180deg); }
+
+  .result-box {
+    background: var(--surface);
+    border-radius: 12px;
+    padding: 20px 24px;
+    border-left: 4px solid;
+  }
+
+  #temp   .result-box { border-color: var(--accent-temp); }
+  #area   .result-box { border-color: var(--accent-area); }
+  #length .result-box { border-color: var(--accent-length); }
+  #speed  .result-box { border-color: var(--accent-speed); }
+
+  .result-label {
+    font-size: 10px;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 6px;
+  }
+
+  .result-value {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 42px;
+    letter-spacing: 0.04em;
+    line-height: 1;
+  }
+
+  #temp   .result-value { color: var(--accent-temp); }
+  #area   .result-value { color: var(--accent-area); }
+  #length .result-value { color: var(--accent-length); }
+  #speed  .result-value { color: var(--accent-speed); }
+
+  .result-formula {
+    font-size: 11px;
+    color: var(--muted);
+    margin-top: 6px;
+  }
+
+  .quick-ref {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 20px 24px;
+    overflow-x: auto;
+  }
+
+  .quick-ref h3 {
+    font-size: 10px;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 16px;
+  }
+
+  .quick-ref table { width: 100%; border-collapse: collapse; font-size: 12px; }
+
+  .quick-ref th {
+    text-align: left;
+    color: var(--muted);
+    font-weight: 400;
+    font-size: 10px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    padding-bottom: 10px;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .quick-ref td {
+    padding: 9px 0;
+    border-bottom: 1px solid rgba(255,255,255,0.04);
+    color: var(--text);
+  }
+
+  .quick-ref td:last-child { color: var(--muted); text-align: right; }
+
+  @keyframes fadeDown {
+    from { opacity: 0; transform: translateY(-20px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(16px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  @media (max-width: 560px) {
+    .conv-row { grid-template-columns: 1fr; }
+    .swap-btn { margin: 0 auto; transform: rotate(90deg); }
+    .tab-btn .tab-label { display: none; }
+    .tab-btn { padding: 10px; }
+  }
+</style>
+</head>
+<body>
+<div class="wrapper">
+
+  <header>
+    <div class="eyebrow">Herramienta de conversión</div>
+    <h1>CONVERSOR<br>UNIVERSAL</h1>
+    <p>Temperatura · Área · Longitud · Velocidad</p>
+  </header>
+
+  <div class="tabs">
+    <button class="tab-btn active" data-tab="temp">
+      <span class="tab-icon">🌡️</span>
+      <span class="tab-label">Temperatura</span>
+    </button>
+    <button class="tab-btn" data-tab="area">
+      <span class="tab-icon">⬛</span>
+      <span class="tab-label">Área</span>
+    </button>
+    <button class="tab-btn" data-tab="length">
+      <span class="tab-icon">📏</span>
+      <span class="tab-label">Longitud</span>
+    </button>
+    <button class="tab-btn" data-tab="speed">
+      <span class="tab-icon">⚡</span>
+      <span class="tab-label">Velocidad</span>
+    </button>
+  </div>
+
+  <!-- TEMPERATURA -->
+  <div id="temp" class="panel active">
+    <div class="conv-card">
+      <h2>Temperatura</h2>
+      <p class="subtitle">Celsius · Fahrenheit · Kelvin</p>
+      <div class="conv-row">
+        <div class="field-group">
+          <label>Valor</label>
+          <input type="number" id="temp-val" value="0" oninput="convertTemp()">
+          <select id="temp-from" onchange="convertTemp()">
+            <option value="C">°C — Celsius</option>
+            <option value="F">°F — Fahrenheit</option>
+            <option value="K">K — Kelvin</option>
+          </select>
+        </div>
+        <button class="swap-btn" onclick="swapUnits('temp')">⇄</button>
+        <div class="field-group">
+          <label>Resultado</label>
+          <input type="number" id="temp-result-input" placeholder="—" oninput="convertTempReverse()">
+          <select id="temp-to" onchange="convertTemp()">
+            <option value="F">°F — Fahrenheit</option>
+            <option value="C">°C — Celsius</option>
+            <option value="K">K — Kelvin</option>
+          </select>
+        </div>
+      </div>
+      <div class="result-box">
+        <div class="result-label">Resultado</div>
+        <div class="result-value" id="temp-result">32 °F</div>
+        <div class="result-formula" id="temp-formula">0 °C → 32 °F</div>
+      </div>
+    </div>
+    <div class="quick-ref">
+      <h3>Referencia rápida</h3>
+      <table>
+        <tr><th>Punto de referencia</th><th>°C</th><th>°F</th><th>K</th></tr>
+        <tr><td>Cero absoluto</td><td>−273.15</td><td>−459.67</td><td>0</td></tr>
+        <tr><td>Congelación del agua</td><td>0</td><td>32</td><td>273.15</td></tr>
+        <tr><td>Temperatura corporal</td><td>37</td><td>98.6</td><td>310.15</td></tr>
+        <tr><td>Ebullición del agua</td><td>100</td><td>212</td><td>373.15</td></tr>
+      </table>
+    </div>
+  </div>
+
+  <!-- ÁREA -->
+  <div id="area" class="panel">
+    <div class="conv-card">
+      <h2>Área</h2>
+      <p class="subtitle">m² · km² · cm² · ft² · in² · mi² · ha · acre</p>
+      <div class="conv-row">
+        <div class="field-group">
+          <label>Valor</label>
+          <input type="number" id="area-val" value="1" oninput="convertArea()">
+          <select id="area-from" onchange="convertArea()">
+            <option value="m2">m² — Metro cuadrado</option>
+            <option value="km2">km² — Kilómetro cuadrado</option>
+            <option value="cm2">cm² — Centímetro cuadrado</option>
+            <option value="ft2">ft² — Pie cuadrado</option>
+            <option value="in2">in² — Pulgada cuadrada</option>
+            <option value="mi2">mi² — Milla cuadrada</option>
+            <option value="ha">ha — Hectárea</option>
+            <option value="acre">acre — Acre</option>
+          </select>
+        </div>
+        <button class="swap-btn" onclick="swapUnits('area')">⇄</button>
+        <div class="field-group">
+          <label>Resultado</label>
+          <input type="number" id="area-result-input" placeholder="—" oninput="convertAreaReverse()">
+          <select id="area-to" onchange="convertArea()">
+            <option value="ft2">ft² — Pie cuadrado</option>
+            <option value="m2">m² — Metro cuadrado</option>
+            <option value="km2">km² — Kilómetro cuadrado</option>
+            <option value="cm2">cm² — Centímetro cuadrado</option>
+            <option value="in2">in² — Pulgada cuadrada</option>
+            <option value="mi2">mi² — Milla cuadrada</option>
+            <option value="ha">ha — Hectárea</option>
+            <option value="acre">acre — Acre</option>
+          </select>
+        </div>
+      </div>
+      <div class="result-box">
+        <div class="result-label">Resultado</div>
+        <div class="result-value" id="area-result">— ft²</div>
+        <div class="result-formula" id="area-formula"></div>
+      </div>
+    </div>
+    <div class="quick-ref">
+      <h3>Equivalencias clave</h3>
+      <table>
+        <tr><th>Unidad</th><th>En m²</th></tr>
+        <tr><td>1 cm²</td><td>0.0001</td></tr>
+        <tr><td>1 ft²</td><td>0.0929</td></tr>
+        <tr><td>1 acre</td><td>4,046.86</td></tr>
+        <tr><td>1 hectárea</td><td>10,000</td></tr>
+        <tr><td>1 km²</td><td>1,000,000</td></tr>
+        <tr><td>1 milla²</td><td>2,589,988</td></tr>
+      </table>
+    </div>
+  </div>
+
+  <!-- LONGITUD -->
+  <div id="length" class="panel">
+    <div class="conv-card">
+      <h2>Longitud</h2>
+      <p class="subtitle">mm · cm · m · km · in · ft · yd · mi · nm</p>
+      <div class="conv-row">
+        <div class="field-group">
+          <label>Valor</label>
+          <input type="number" id="length-val" value="1" oninput="convertLength()">
+          <select id="length-from" onchange="convertLength()">
+            <option value="m">m — Metro</option>
+            <option value="km">km — Kilómetro</option>
+            <option value="cm">cm — Centímetro</option>
+            <option value="mm">mm — Milímetro</option>
+            <option value="mi">mi — Milla</option>
+            <option value="yd">yd — Yarda</option>
+            <option value="ft">ft — Pie</option>
+            <option value="in">in — Pulgada</option>
+            <option value="nm">nm — Milla náutica</option>
+          </select>
+        </div>
+        <button class="swap-btn" onclick="swapUnits('length')">⇄</button>
+        <div class="field-group">
+          <label>Resultado</label>
+          <input type="number" id="length-result-input" placeholder="—" oninput="convertLengthReverse()">
+          <select id="length-to" onchange="convertLength()">
+            <option value="ft">ft — Pie</option>
+            <option value="m">m — Metro</option>
+            <option value="km">km — Kilómetro</option>
+            <option value="cm">cm — Centímetro</option>
+            <option value="mm">mm — Milímetro</option>
+            <option value="mi">mi — Milla</option>
+            <option value="yd">yd — Yarda</option>
+            <option value="in">in — Pulgada</option>
+            <option value="nm">nm — Milla náutica</option>
+          </select>
+        </div>
+      </div>
+      <div class="result-box">
+        <div class="result-label">Resultado</div>
+        <div class="result-value" id="length-result">— ft</div>
+        <div class="result-formula" id="length-formula"></div>
+      </div>
+    </div>
+    <div class="quick-ref">
+      <h3>Equivalencias clave</h3>
+      <table>
+        <tr><th>Unidad</th><th>En metros</th></tr>
+        <tr><td>1 pulgada</td><td>0.0254 m</td></tr>
+        <tr><td>1 pie</td><td>0.3048 m</td></tr>
+        <tr><td>1 yarda</td><td>0.9144 m</td></tr>
+        <tr><td>1 milla</td><td>1,609.34 m</td></tr>
+        <tr><td>1 milla náutica</td><td>1,852 m</td></tr>
+        <tr><td>1 kilómetro</td><td>1,000 m</td></tr>
+      </table>
+    </div>
+  </div>
+
+  <!-- VELOCIDAD -->
+  <div id="speed" class="panel">
+    <div class="conv-card">
+      <h2>Velocidad</h2>
+      <p class="subtitle">km/h · m/s · mph · nudos · ft/s · Mach</p>
+      <div class="conv-row">
+        <div class="field-group">
+          <label>Valor</label>
+          <input type="number" id="speed-val" value="100" oninput="convertSpeed()">
+          <select id="speed-from" onchange="convertSpeed()">
+            <option value="kmh">km/h — Kilómetros por hora</option>
+            <option value="ms">m/s — Metros por segundo</option>
+            <option value="mph">mph — Millas por hora</option>
+            <option value="knot">nudo — Milla náutica/hora</option>
+            <option value="mach">Mach</option>
+            <option value="fts">ft/s — Pies por segundo</option>
+          </select>
+        </div>
+        <button class="swap-btn" onclick="swapUnits('speed')">⇄</button>
+        <div class="field-group">
+          <label>Resultado</label>
+          <input type="number" id="speed-result-input" placeholder="—" oninput="convertSpeedReverse()">
+          <select id="speed-to" onchange="convertSpeed()">
+            <option value="mph">mph — Millas por hora</option>
+            <option value="kmh">km/h — Kilómetros por hora</option>
+            <option value="ms">m/s — Metros por segundo</option>
+            <option value="knot">nudo — Milla náutica/hora</option>
+            <option value="mach">Mach</option>
+            <option value="fts">ft/s — Pies por segundo</option>
+          </select>
+        </div>
+      </div>
+      <div class="result-box">
+        <div class="result-label">Resultado</div>
+        <div class="result-value" id="speed-result">— mph</div>
+        <div class="result-formula" id="speed-formula"></div>
+      </div>
+    </div>
+    <div class="quick-ref">
+      <h3>Referencias de velocidad</h3>
+      <table>
+        <tr><th>Referencia</th><th>km/h</th><th>mph</th><th>m/s</th></tr>
+        <tr><td>Vel. sonido (Mach 1)</td><td>1,235</td><td>767.3</td><td>343</td></tr>
+        <tr><td>Vel. crucero avión</td><td>900</td><td>559</td><td>250</td></tr>
+        <tr><td>Tren de alta velocidad</td><td>300</td><td>186.4</td><td>83.3</td></tr>
+        <tr><td>Límite de autopista</td><td>120</td><td>74.6</td><td>33.3</td></tr>
+        <tr><td>Viento fuerte</td><td>60</td><td>37.3</td><td>16.7</td></tr>
+      </table>
+    </div>
+  </div>
+
+</div>
+
+<script>
+// TABS
+document.querySelectorAll('.tab-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+    document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+    btn.classList.add('active');
+    document.getElementById(btn.dataset.tab).classList.add('active');
+  });
+});
+
+function swapUnits(type) {
+  const from = document.getElementById(`${type}-from`);
+  const to   = document.getElementById(`${type}-to`);
+  [from.value, to.value] = [to.value, from.value];
+  window[`convert${type.charAt(0).toUpperCase()+type.slice(1)}`]();
+}
+
+function fmt(n) {
+  if (isNaN(n) || !isFinite(n)) return '—';
+  if (Math.abs(n) >= 1e10 || (Math.abs(n) < 0.0001 && n !== 0)) return n.toExponential(4);
+  return parseFloat(n.toPrecision(7)).toString();
+}
+
+const LABELS = {
+  temp:   { C:'°C', F:'°F', K:'K' },
+  area:   { m2:'m²', km2:'km²', cm2:'cm²', ft2:'ft²', in2:'in²', mi2:'mi²', ha:'ha', acre:'acre' },
+  length: { m:'m', km:'km', cm:'cm', mm:'mm', mi:'mi', yd:'yd', ft:'ft', in:'in', nm:'nm' },
+  speed:  { kmh:'km/h', ms:'m/s', mph:'mph', knot:'nudos', mach:'Mach', fts:'ft/s' }
+};
+function ul(type, key) { return LABELS[type][key] || key; }
+
+// TEMPERATURA
+function toK(v, u) {
+  if (u==='C') return v + 273.15;
+  if (u==='F') return (v-32)*5/9 + 273.15;
+  return v;
+}
+function fromK(k, u) {
+  if (u==='C') return k - 273.15;
+  if (u==='F') return (k-273.15)*9/5 + 32;
+  return k;
+}
+function convertTemp() {
+  const v = parseFloat(document.getElementById('temp-val').value)||0;
+  const f = document.getElementById('temp-from').value;
+  const t = document.getElementById('temp-to').value;
+  const r = fromK(toK(v,f),t);
+  document.getElementById('temp-result-input').value = fmt(r);
+  document.getElementById('temp-result').textContent  = `${fmt(r)} ${ul('temp',t)}`;
+  document.getElementById('temp-formula').textContent = `${v} ${ul('temp',f)} → ${fmt(r)} ${ul('temp',t)}`;
+}
+function convertTempReverse() {
+  const v = parseFloat(document.getElementById('temp-result-input').value)||0;
+  const f = document.getElementById('temp-to').value;
+  const t = document.getElementById('temp-from').value;
+  const r = fromK(toK(v,f),t);
+  document.getElementById('temp-val').value = fmt(r);
+  document.getElementById('temp-result').textContent  = `${fmt(v)} ${ul('temp',f)}`;
+  document.getElementById('temp-formula').textContent = `${fmt(r)} ${ul('temp',t)} → ${fmt(v)} ${ul('temp',f)}`;
+}
+
+// ÁREA
+const A2M2 = { m2:1, km2:1e6, cm2:1e-4, ft2:0.092903, in2:6.4516e-4, mi2:2589988.11, ha:10000, acre:4046.86 };
+function convertArea() {
+  const v = parseFloat(document.getElementById('area-val').value)||0;
+  const f = document.getElementById('area-from').value;
+  const t = document.getElementById('area-to').value;
+  const r = v * A2M2[f] / A2M2[t];
+  document.getElementById('area-result-input').value = fmt(r);
+  document.getElementById('area-result').textContent  = `${fmt(r)} ${ul('area',t)}`;
+  document.getElementById('area-formula').textContent = `${v} ${ul('area',f)} → ${fmt(r)} ${ul('area',t)}`;
+}
+function convertAreaReverse() {
+  const v = parseFloat(document.getElementById('area-result-input').value)||0;
+  const f = document.getElementById('area-to').value;
+  const t = document.getElementById('area-from').value;
+  const r = v * A2M2[f] / A2M2[t];
+  document.getElementById('area-val').value = fmt(r);
+  document.getElementById('area-result').textContent  = `${fmt(v)} ${ul('area',f)}`;
+  document.getElementById('area-formula').textContent = `${fmt(r)} ${ul('area',t)} → ${fmt(v)} ${ul('area',f)}`;
+}
+
+// LONGITUD
+const L2M = { m:1, km:1000, cm:0.01, mm:0.001, mi:1609.344, yd:0.9144, ft:0.3048, in:0.0254, nm:1852 };
+function convertLength() {
+  const v = parseFloat(document.getElementById('length-val').value)||0;
+  const f = document.getElementById('length-from').value;
+  const t = document.getElementById('length-to').value;
+  const r = v * L2M[f] / L2M[t];
+  document.getElementById('length-result-input').value = fmt(r);
+  document.getElementById('length-result').textContent  = `${fmt(r)} ${ul('length',t)}`;
+  document.getElementById('length-formula').textContent = `${v} ${ul('length',f)} → ${fmt(r)} ${ul('length',t)}`;
+}
+function convertLengthReverse() {
+  const v = parseFloat(document.getElementById('length-result-input').value)||0;
+  const f = document.getElementById('length-to').value;
+  const t = document.getElementById('length-from').value;
+  const r = v * L2M[f] / L2M[t];
+  document.getElementById('length-val').value = fmt(r);
+  document.getElementById('length-result').textContent  = `${fmt(v)} ${ul('length',f)}`;
+  document.getElementById('length-formula').textContent = `${fmt(r)} ${ul('length',t)} → ${fmt(v)} ${ul('length',f)}`;
+}
+
+// VELOCIDAD
+const S2MS = { kmh:1/3.6, ms:1, mph:0.44704, knot:0.514444, mach:343, fts:0.3048 };
+function convertSpeed() {
+  const v = parseFloat(document.getElementById('speed-val').value)||0;
+  const f = document.getElementById('speed-from').value;
+  const t = document.getElementById('speed-to').value;
+  const r = v * S2MS[f] / S2MS[t];
+  document.getElementById('speed-result-input').value = fmt(r);
+  document.getElementById('speed-result').textContent  = `${fmt(r)} ${ul('speed',t)}`;
+  document.getElementById('speed-formula').textContent = `${v} ${ul('speed',f)} → ${fmt(r)} ${ul('speed',t)}`;
+}
+function convertSpeedReverse() {
+  const v = parseFloat(document.getElementById('speed-result-input').value)||0;
+  const f = document.getElementById('speed-to').value;
+  const t = document.getElementById('speed-from').value;
+  const r = v * S2MS[f] / S2MS[t];
+  document.getElementById('speed-val').value = fmt(r);
+  document.getElementById('speed-result').textContent  = `${fmt(v)} ${ul('speed',f)}`;
+  document.getElementById('speed-formula').textContent = `${fmt(r)} ${ul('speed',t)} → ${fmt(v)} ${ul('speed',f)}`;
+}
+
+// INIT
+convertTemp(); convertArea(); convertLength(); convertSpeed();
+</script>
+</body>
+</html>
