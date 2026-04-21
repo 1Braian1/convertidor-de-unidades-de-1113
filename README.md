@@ -1,4 +1,9 @@
-# convertidor-de-unidades-de-1113 trabajo de Andry y Braian y Michel y Mogojojo
+ # CONVERSOR UNIVERSAL 
+ ## Integrantes 
+ -Andry Sanabria 
+ -Braian Otalora
+ -Victor Moya 
+ -Michael Otalora 
 ¿para que servira? 
 -El convertidor servira valga redundancia para hacer conversiones de cualquier unidad principarlmente de temperatura 
 ¿como servira ? 
