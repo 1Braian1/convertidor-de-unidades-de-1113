@@ -121,9 +121,64 @@ function convertSpeedReverse() {
   document.getElementById('speed-result').textContent  = `${fmt(v)} ${ul('speed',f)}`;
   document.getElementById('speed-formula').textContent = `${fmt(r)} ${ul('speed',t)} → ${fmt(v)} ${ul('speed',f)}`;
 }
+const M2G = { kg:1000, g:1, lb:453.592, oz:28.3495 };
+
+function convertMass() {
+  const v = parseFloat(document.getElementById('mass-val').value)||0;
+  const f = document.getElementById('mass-from').value;
+  const t = document.getElementById('mass-to').value;
+  const r = v * M2G[f] / M2G[t];
+
+  document.getElementById('mass-result-input').value = fmt(r);
+  document.getElementById('mass-result').textContent  = `${fmt(r)} ${t}`;
+  document.getElementById('mass-formula').textContent = `${v} ${f} → ${fmt(r)} ${t}`;
+}
+
+function convertMassReverse() {
+  const v = parseFloat(document.getElementById('mass-result-input').value)||0;
+  const f = document.getElementById('mass-to').value;
+  const t = document.getElementById('mass-from').value;
+  const r = v * M2G[f] / M2G[t];
+
+  document.getElementById('mass-val').value = fmt(r);
+  document.getElementById('mass-result').textContent  = `${fmt(v)} ${f}`;
+  document.getElementById('mass-formula').textContent = `${fmt(r)} ${t} → ${fmt(v)} ${f}`;
+}
+const V2L = {
+  l: 1,
+  ml: 0.001,
+  m3: 1000,
+  gal: 3.78541
+};
+
+function convertVolume() {
+  const v = parseFloat(document.getElementById('volume-val').value) || 0;
+  const f = document.getElementById('volume-from').value;
+  const t = document.getElementById('volume-to').value;
+
+  const r = v * V2L[f] / V2L[t];
+
+  document.getElementById('volume-result-input').value = fmt(r);
+  document.getElementById('volume-result').textContent = `${fmt(r)} ${t}`;
+  document.getElementById('volume-formula').textContent = `${v} ${f} → ${fmt(r)} ${t}`;
+}
+
+function convertVolumeReverse() {
+  const v = parseFloat(document.getElementById('volume-result-input').value) || 0;
+  const f = document.getElementById('volume-to').value;
+  const t = document.getElementById('volume-from').value;
+
+  const r = v * V2L[f] / V2L[t];
+
+  document.getElementById('volume-val').value = fmt(r);
+  document.getElementById('volume-result').textContent = `${fmt(v)} ${f}`;
+  document.getElementById('volume-formula').textContent = `${fmt(r)} ${t} → ${fmt(v)} ${f}`;
+}
 
 // INIT
 convertTemp();
 convertArea();
 convertLength();
 convertSpeed();
+convertMass();
+convertVolume();

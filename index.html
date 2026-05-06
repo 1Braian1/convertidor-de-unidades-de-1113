@@ -579,6 +579,7 @@
         </select>
       </div>
     </div>
+    
 
     <div class="result-box">
       <div class="result-label">Resultado</div>
@@ -586,8 +587,10 @@
       <div class="result-formula" id="mass-formula"></div>
     </div>
   </div>
-<!--volumen-->
-<div id="volume" class="panel">
+  </div>
+  
+  <!--volumen-->
+  <div id="volume" class="panel">
   <div class="conv-card">
     <h2>Volumen</h2>
     <p class="subtitle">L · mL · m³ · gal</p>
@@ -608,7 +611,7 @@
 
       <div class="field-group">
         <label>Resultado</label>
-        <input type="number" id="volume-result-input" oninput="convertVolumeReverse()">
+        <input type="number" id="volume-result-input" placeholder="—" oninput="convertVolumeReverse()">
         <select id="volume-to" onchange="convertVolume()">
           <option value="ml">mL — Mililitro</option>
           <option value="l">L — Litro</option>
@@ -625,7 +628,7 @@
     </div>
   </div>
 </div>
-<<<<<<< HEAD
+  
 
     </div>
 
@@ -636,9 +639,6 @@
     </div>
   </div>
 </div>
-</div>
-=======
->>>>>>> cdd2c60a047be7ed67d123648852fbf71b5c2282
 <script src="script.js"></script>
 </body>
 </html>
