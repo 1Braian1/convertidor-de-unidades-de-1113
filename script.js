@@ -175,6 +175,54 @@ function convertVolumeReverse() {
   document.getElementById('volume-formula').textContent = `${fmt(r)} ${t} → ${fmt(v)} ${f}`;
 }
 
+// =========================
+// CONVERTIDOR DE MONEDA
+// =========================
+
+async function convertCurrency() {
+
+  const amount = parseFloat(
+    document.getElementById("currency-val").value
+  );
+
+  const from =
+    document.getElementById("currency-from").value;
+
+  const to =
+    document.getElementById("currency-to").value;
+
+  if (isNaN(amount)) return;
+
+  try {
+
+    const response = await fetch(
+      `https://api.exchangerate-api.com/v4/latest/${from}`
+    );
+
+    const data = await response.json();
+
+    const rate = data.rates[to];
+
+    const result = amount * rate;
+
+    document.getElementById("currency-result-input").value =
+      result.toFixed(2);
+
+    document.getElementById("currency-result").textContent =
+      `${result.toFixed(2)} ${to}`;
+
+    document.getElementById("currency-formula").textContent =
+      `${amount} ${from} = ${result.toFixed(2)} ${to}`;
+
+  } catch (error) {
+
+    console.error("Error:", error);
+
+    document.getElementById("currency-result").textContent =
+      "Error";
+
+  }
+}
 // INIT
 convertTemp();
 convertArea();
@@ -182,3 +230,4 @@ convertLength();
 convertSpeed();
 convertMass();
 convertVolume();
+

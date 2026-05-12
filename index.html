@@ -4,305 +4,12 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Conversor Universal</title>
-<link href="2?family=Bebas+Neue&family=DM+Mono:wght@300;400;500&display=swaphttps://fonts.googleapis.com/css" rel="stylesheet">
-<style>
-  :root {
-    --bg: #0a0a0f;
-    --surface: #12121a;
-    --card: #1a1a26;
-    --border: #2a2a3d;
-    --accent-temp: #ff6b35;
-    --accent-area: #00d4aa;
-    --accent-length: #a78bfa;
-    --accent-speed: #fbbf24;
-    --text: #f0eff8;
-    --muted: #6b6b8a;
-    --glow-temp: rgba(255,107,53,0.15);
-    --glow-area: rgba(0,212,170,0.15);
-    --glow-length: rgba(167,139,250,0.15);
-    --glow-speed: rgba(185, 140, 26, 0.15);
-  }
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 
-  * { margin:0; padding:0; box-sizing:border-box; }
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Mono:wght@300;400;500&display=swap" rel="stylesheet">
 
-  body {
-    background: var(--bg);
-    color: var(--text);
-    font-family: 'DM Mono', monospace;
-    min-height: 100vh;
-    overflow-x: hidden;
-  }
-
-  body::before {
-    content: '';
-    position: fixed;
-    inset: 0;
-    background-image:
-      linear-gradient(rgba(214, 3, 3, 0.02) 1px, transparent 1px),
-      linear-gradient(90deg, rgba(255,255,255,0.02) 1px, transparent 1px);
-    background-size: 40px 40px;
-    pointer-events: none;
-    z-index: 0;
-  }
-
-  .wrapper {
-    position: relative;
-    z-index: 1;
-    max-width: 960px;
-    margin: 0 auto;
-    padding: 48px 24px 80px;
-  }
-
-  header {
-    text-align: center;
-    margin-bottom: 56px;
-    animation: fadeDown 0.7s ease both;
-  }
-
-  header .eyebrow {
-    font-size: 11px;
-    letter-spacing: 0.35em;
-    color: var(--muted);
-    text-transform: uppercase;
-    margin-bottom: 12px;
-  }
-
-  header h1 {
-    font-family: 'Bebas Neue', sans-serif;
-    font-size: clamp(56px, 10vw, 96px);
-    letter-spacing: 0.05em;
-    line-height: 0.9;
-    background: linear-gradient(135deg, #ff6b35 0%, #a78bfa 40%, #00d4aa 80%, #fbbf24 100%);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
-  }
-
-  header p {
-    margin-top: 16px;
-    font-size: 13px;
-    color: var(--muted);
-    letter-spacing: 0.05em;
-  }
-
-  .tabs {
-    display: flex;
-    gap: 4px;
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: 14px;
-    padding: 6px;
-    margin-bottom: 32px;
-    animation: fadeUp 0.6s 0.2s ease both;
-  }
-
-  .tab-btn {
-    flex: 1;
-    background: none;
-    border: none;
-    color: var(--muted);
-    font-family: 'DM Mono', monospace;
-    font-size: 12px;
-    letter-spacing: 0.08em;
-    text-transform: uppercase;
-    padding: 10px 8px;
-    border-radius: 10px;
-    cursor: pointer;
-    transition: all 0.25s;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 5px;
-  }
-
-  .tab-btn .tab-icon { font-size: 20px; }
-  .tab-btn:hover { color: var(--text); background: var(--card); }
-
-  .tab-btn.active[data-tab="temp"]   { color: var(--accent-temp);   background: var(--glow-temp);   box-shadow: inset 0 0 0 1px var(--accent-temp); }
-  .tab-btn.active[data-tab="area"]   { color: var(--accent-area);   background: var(--glow-area);   box-shadow: inset 0 0 0 1px var(--accent-area); }
-  .tab-btn.active[data-tab="length"] { color: var(--accent-length); background: var(--glow-length); box-shadow: inset 0 0 0 1px var(--accent-length); }
-  .tab-btn.active[data-tab="speed"]  { color: var(--accent-speed);  background: var(--glow-speed);  box-shadow: inset 0 0 0 1px var(--accent-speed); }
-
-  .panel { display: none; animation: fadeUp 0.4s ease both; }
-  .panel.active { display: block; }
-
-  .conv-card {
-    background: var(--card);
-    border: 1px solid var(--border);
-    border-radius: 20px;
-    padding: 32px;
-    margin-bottom: 20px;
-  }
-
-  .conv-card h2 {
-    font-family: 'Bebas Neue', sans-serif;
-    font-size: 28px;
-    letter-spacing: 0.06em;
-    margin-bottom: 6px;
-  }
-
-  .conv-card .subtitle {
-    font-size: 11px;
-    color: var(--muted);
-    letter-spacing: 0.1em;
-    text-transform: uppercase;
-    margin-bottom: 28px;
-  }
-
-  #temp   .conv-card h2 { color: var(--accent-temp); }
-  #area   .conv-card h2 { color: var(--accent-area); }
-  #length .conv-card h2 { color: var(--accent-length); }
-  #speed  .conv-card h2 { color: var(--accent-speed); }
-
-  .conv-row {
-    display: grid;
-    grid-template-columns: 1fr auto 1fr;
-    align-items: end;
-    gap: 16px;
-    margin-bottom: 24px;
-  }
-
-  .field-group { display: flex; flex-direction: column; gap: 8px; }
-
-  .field-group label {
-    font-size: 10px;
-    letter-spacing: 0.15em;
-    text-transform: uppercase;
-    color: var(--muted);
-  }
-
-  .field-group select,
-  .field-group input {
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: 10px;
-    color: var(--text);
-    font-family: 'DM Mono', monospace;
-    font-size: 14px;
-    padding: 12px 14px;
-    width: 100%;
-    outline: none;
-    transition: border-color 0.2s, box-shadow 0.2s;
-    -webkit-appearance: none;
-  }
-
-  .field-group input { font-size: 22px; font-weight: 500; }
-
-  #temp   .field-group input:focus, #temp   .field-group select:focus { border-color: var(--accent-temp);   box-shadow: 0 0 0 3px var(--glow-temp); }
-  #area   .field-group input:focus, #area   .field-group select:focus { border-color: var(--accent-area);   box-shadow: 0 0 0 3px var(--glow-area); }
-  #length .field-group input:focus, #length .field-group select:focus { border-color: var(--accent-length); box-shadow: 0 0 0 3px var(--glow-length); }
-  #speed  .field-group input:focus, #speed  .field-group select:focus { border-color: var(--accent-speed);  box-shadow: 0 0 0 3px var(--glow-speed); }
-
-  .swap-btn {
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: 50%;
-    width: 44px;
-    height: 44px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    cursor: pointer;
-    font-size: 18px;
-    color: var(--muted);
-    transition: all 0.25s;
-    flex-shrink: 0;
-    margin-bottom: 2px;
-  }
-
-  .swap-btn:hover { color: var(--text); border-color: var(--text); transform: rotate(180deg); }
-
-  .result-box {
-    background: var(--surface);
-    border-radius: 12px;
-    padding: 20px 24px;
-    border-left: 4px solid;
-  }
-
-  #temp   .result-box { border-color: var(--accent-temp); }
-  #area   .result-box { border-color: var(--accent-area); }
-  #length .result-box { border-color: var(--accent-length); }
-  #speed  .result-box { border-color: var(--accent-speed); }
-
-  .result-label {
-    font-size: 10px;
-    letter-spacing: 0.15em;
-    text-transform: uppercase;
-    color: var(--muted);
-    margin-bottom: 6px;
-  }
-
-  .result-value {
-    font-family: 'Bebas Neue', sans-serif;
-    font-size: 42px;
-    letter-spacing: 0.04em;
-    line-height: 1;
-  }
-
-  #temp   .result-value { color: var(--accent-temp); }
-  #area   .result-value { color: var(--accent-area); }
-  #length .result-value { color: var(--accent-length); }
-  #speed  .result-value { color: var(--accent-speed); }
-
-  .result-formula {
-    font-size: 11px;
-    color: var(--muted);
-    margin-top: 6px;
-  }
-
-  .quick-ref {
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: 16px;
-    padding: 20px 24px;
-    overflow-x: auto;
-  }
-
-  .quick-ref h3 {
-    font-size: 10px;
-    letter-spacing: 0.15em;
-    text-transform: uppercase;
-    color: var(--muted);
-    margin-bottom: 16px;
-  }
-
-  .quick-ref table { width: 100%; border-collapse: collapse; font-size: 12px; }
-
-  .quick-ref th {
-    text-align: left;
-    color: var(--muted);
-    font-weight: 400;
-    font-size: 10px;
-    letter-spacing: 0.1em;
-    text-transform: uppercase;
-    padding-bottom: 10px;
-    border-bottom: 1px solid var(--border);
-  }
-
-  .quick-ref td {
-    padding: 9px 0;
-    border-bottom: 1px solid rgba(255,255,255,0.04);
-    color: var(--text);
-  }
-
-  .quick-ref td:last-child { color: var(--muted); text-align: right; }
-
-  @keyframes fadeDown {
-    from { opacity: 0; transform: translateY(-20px); }
-    to   { opacity: 1; transform: translateY(0); }
-  }
-  @keyframes fadeUp {
-    from { opacity: 0; transform: translateY(16px); }
-    to   { opacity: 1; transform: translateY(0); }
-  }
-
-  @media (max-width: 560px) {
-    .conv-row { grid-template-columns: 1fr; }
-    .swap-btn { margin: 0 auto; transform: rotate(90deg); }
-    .tab-btn .tab-label { display: none; }
-    .tab-btn { padding: 10px; }
-  }
-</style>
+<link rel="stylesheet" href="style.css">
 </head>
 <body>
 <div class="wrapper">
@@ -314,10 +21,11 @@
   </header>
 
   <div class="tabs">
+
     <button class="tab-btn active" data-tab="temp">
       <span class="tab-icon">🌡️</span>
       <span class="tab-label">Temperatura</span>
-    </button>
+    </button> 
     <button class="tab-btn" data-tab="area">
       <span class="tab-icon">⬛</span>
       <span class="tab-label">Área</span>
@@ -338,6 +46,10 @@
   <span class="tab-icon">🧪</span>
   <span class="tab-label">Volumen</span>
 </button>
+<button class="tab-btn" data-tab="currency">
+  <span class="tab-icon">💱</span>
+  <span class="tab-label">Moneda</span>
+</button> 
   </div>
 
   <!-- TEMPERATURA -->
@@ -589,36 +301,57 @@
   </div>
   </div>
   
-  <!--volumen-->
-  <div id="volume" class="panel">
+ <!-- VOLUMEN -->
+<div id="volume" class="panel">
   <div class="conv-card">
+
     <h2>Volumen</h2>
     <p class="subtitle">L · mL · m³ · gal</p>
 
     <div class="conv-row">
+
       <div class="field-group">
         <label>Valor</label>
-        <input type="number" id="volume-val" value="1" oninput="convertVolume()">
-        <select id="volume-from" onchange="convertVolume()">
+
+        <input type="number"
+               id="volume-val"
+               value="1"
+               oninput="convertVolume()">
+
+        <select id="volume-from"
+                onchange="convertVolume()">
+
           <option value="l">L — Litro</option>
           <option value="ml">mL — Mililitro</option>
           <option value="m3">m³ — Metro cúbico</option>
           <option value="gal">gal — Galón</option>
+
         </select>
       </div>
 
-      <button class="swap-btn" onclick="swapUnits('volume')">⇄</button>
+      <button class="swap-btn"
+              onclick="swapUnits('volume')">⇄</button>
 
       <div class="field-group">
+
         <label>Resultado</label>
-        <input type="number" id="volume-result-input" placeholder="—" oninput="convertVolumeReverse()">
-        <select id="volume-to" onchange="convertVolume()">
+
+        <input type="number"
+               id="volume-result-input"
+               placeholder="—"
+               oninput="convertVolumeReverse()">
+
+        <select id="volume-to"
+                onchange="convertVolume()">
+
           <option value="ml">mL — Mililitro</option>
           <option value="l">L — Litro</option>
           <option value="m3">m³ — Metro cúbico</option>
           <option value="gal">gal — Galón</option>
+
         </select>
       </div>
+
     </div>
 
     <div class="result-box">
@@ -626,17 +359,72 @@
       <div class="result-value" id="volume-result">—</div>
       <div class="result-formula" id="volume-formula"></div>
     </div>
+
   </div>
 </div>
-  
+
+<!-- MONEDA -->
+<div id="currency" class="panel">
+
+  <div class="conv-card">
+
+    <h2>Moneda</h2>
+    <p class="subtitle">USD · EUR · COP · GBP · JPY</p>
+
+    <div class="conv-row">
+
+      <div class="field-group">
+
+        <label>Valor</label>
+
+        <input type="number"
+               id="currency-val"
+               value="1"
+               oninput="convertCurrency()">
+
+        <select id="currency-from"
+                onchange="convertCurrency()">
+
+          <option value="USD">USD — Dólar</option>
+          <option value="COP">COP — Peso Colombiano</option>
+          <option value="EUR">EUR — Euro</option>
+          <option value="GBP">GBP — Libra</option>
+          <option value="JPY">JPY — Yen</option>
+
+        </select>
+      </div>
+
+      <button class="swap-btn"
+              onclick="swapUnits('currency')">⇄</button>
+
+      <div class="field-group">
+
+        <label>Resultado</label>
+
+        <input type="text"
+               id="currency-result-input"
+               readonly>
+
+        <select id="currency-to"
+                onchange="convertCurrency()">
+
+          <option value="COP">COP — Peso Colombiano</option>
+          <option value="USD">USD — Dólar</option>
+          <option value="EUR">EUR — Euro</option>
+          <option value="GBP">GBP — Libra</option>
+          <option value="JPY">JPY — Yen</option>
+
+        </select>
+      </div>
 
     </div>
 
     <div class="result-box">
       <div class="result-label">Resultado</div>
-      <div class="result-value" id="volume-result">—</div>
-      <div class="result-formula" id="volume-formula"></div>
+      <div class="result-value" id="currency-result">—</div>
+      <div class="result-formula" id="currency-formula"></div>
     </div>
+
   </div>
 </div>
 <script src="script.js"></script>
