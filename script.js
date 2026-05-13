@@ -223,6 +223,44 @@ function convertMassReverse() {
   document.getElementById('mass-formula').textContent = `${fmt(r)} ${ul('mass', t)} → ${fmt(v)} ${ul('mass', f)}`
 }
 
+// =======================
+// CLIMA EN TIEMPO REAL
+// =======================
+
+async function getWeather() {
+
+  const city =
+    document.getElementById("weather-country").value;
+
+  const apiKey = "f884dbe41a53a8bee26c1f5fa456658b";
+
+  const url =
+    `https://api.openweathermap.org/data/2.5/weather?q=${city}&appid=${apiKey}&units=metric&lang=es`;
+
+  try {
+
+    const response = await fetch(url);
+
+    const data = await response.json();
+
+    const temp = data.main.temp;
+
+    const description = data.weather[0].description;
+
+    document.getElementById("weather-result").textContent =
+      `${temp} °C`;
+
+    document.getElementById("weather-info").textContent =
+      description;
+
+  } catch (error) {
+
+    document.getElementById("weather-result").textContent =
+      "Error";
+
+  }
+}
+
 // VOLUMEN
 const V2L = { l: 1, ml: 0.001, m3: 1000, gal: 3.78541 }
 function convertVolume() {
@@ -284,6 +322,50 @@ async function convertCurrency() {
   }
 }
 
+// =========================
+// LIMITAR INPUTS
+// =========================
+
+function limitInput(id, maxLength) {
+  const input = document.getElementById(id);
+
+  input.addEventListener("input", () => {
+
+    // eliminar negativos, letras y símbolos raros
+    input.value = input.value.replace(/[^0-9.]/g, "");
+
+    // evitar múltiples puntos decimales
+    const parts = input.value.split(".");
+    if (parts.length > 2) {
+      input.value = parts[0] + "." + parts[1];
+    }
+
+    // limitar cantidad de caracteres
+    if (input.value.length > maxLength) {
+      input.value = input.value.slice(0, maxLength);
+    }
+
+  });
+}
+
+// =========================
+// LIMITES
+// =========================
+
+limitInput("temp-val", 15);
+
+limitInput("area-val", 15);
+
+limitInput("length-val", 15);
+
+limitInput("speed-val", 15);
+
+limitInput("mass-val", 15);
+
+limitInput("volume-val", 15);
+
+limitInput("currency-val", 15);
+
 // INIT
 convertTemp()
 convertArea()
@@ -291,3 +373,4 @@ convertLength()
 convertSpeed()
 convertMass()
 convertVolume()
+getWeather()

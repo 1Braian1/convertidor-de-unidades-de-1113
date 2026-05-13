@@ -22,6 +22,10 @@
 
   <div class="tabs">
 
+    <button class="tab-btn" data-tab="weather">
+  <span class="tab-icon">🌎</span>
+  <span class="tab-label">Clima</span>
+</button>
     <button class="tab-btn active" data-tab="temp">
       <span class="tab-icon">🌡️</span>
       <span class="tab-label">Temperatura</span>
@@ -51,6 +55,57 @@
   <span class="tab-label">Moneda</span>
 </button> 
   </div>
+
+<!-- CLIMA -->
+<div id="weather" class="panel">
+
+  <div class="conv-card">
+
+    <h2>Temperaturas de Suramérica</h2>
+    <p class="subtitle">
+      Datos en tiempo real
+    </p>
+
+    <div class="field-group">
+
+      <label>Selecciona un país</label>
+
+      <select id="weather-country" onchange="getWeather()">
+
+        <option value="Bogota">Colombia</option>
+        <option value="Buenos Aires">Argentina</option>
+        <option value="Brasilia">Brasil</option>
+        <option value="Santiago">Chile</option>
+        <option value="Lima">Perú</option>
+        <option value="Quito">Ecuador</option>
+        <option value="Caracas">Venezuela</option>
+        <option value="La Paz">Bolivia</option>
+        <option value="Asuncion">Paraguay</option>
+        <option value="Montevideo">Uruguay</option>
+
+      </select>
+
+    </div>
+
+    <div class="result-box">
+
+      <div class="result-label">
+        Temperatura actual
+      </div>
+
+      <div class="result-value" id="weather-result">
+        —
+      </div>
+
+      <div class="result-formula" id="weather-info">
+        Esperando datos...
+      </div>
+
+    </div>
+
+  </div>
+
+</div>
 
   <!-- TEMPERATURA -->
   <div id="temp" class="panel active">
